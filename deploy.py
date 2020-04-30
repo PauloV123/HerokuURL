@@ -29,7 +29,7 @@ def post(self):
         if reator['volume'] < int(volume):
             json = {
                 "status_code": 204,
-                "body": "Nao ha volume suficiente no tanque"
+                "body": "Nao ha volume suficiente no reator"
             }
         else:
             json = {
@@ -54,24 +54,6 @@ def getVolume():
     }
     return response
 
-
-class Secador(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-
-    def run(self):
-        while True:
-            global volume
-            if volume > 0:
-                time.sleep(3)
-                request = {
-                    'biodiesel': volume
-                }
-                print('sending volume to storage tank')
-                print(request)
-                #fazer callout pro tanque de biodisel
-                volume = 0
-
 class Reator(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -82,12 +64,14 @@ class Reator(threading.Thread):
                 
                 time.sleep(1)
                 json = {
-                    'NAOH':0.5,
-                    'ETOH':1.9,
+                    'naoh':0.5,
+                    'etoh':1.9,
+                    'origem': 'reator'
                 }
-                #response = requests.post(url='', json=json, headers={"Content_Type": "application/json"}).json()
-                #reator['solucao']['NAOH'] = response['NAOH']
-                #reator['solucao']['ETOH'] = response['ETOH']
+                
+                response = requests.post(url='https://destrotrampo.herokuapp.com/naoh-etoh', json=json, headers={"Content_Type": "application/json"}).json()
+                reator['solucao']['NAOH'] += response['volume_naoh']
+                reator['solucao']['ETOH'] += response['volume_etoh']
                 json = {
                     'volume': 47.6
                 }
@@ -97,9 +81,6 @@ class Reator(threading.Thread):
                     reator['solucao']['oleo'] = response['volume']
 
                 reator['volume'] += reator['solucao']['oleo']+reator['solucao']['NAOH']+reator['solucao']['ETOH']
-            #else:
-            #    pergunta se manda pro thomas
-             #   if manda, eu mando
 
 def create_app():
     global app
@@ -108,7 +89,7 @@ def create_app():
     sec.start()
     print('logic thread started!')
     print('starting flask server')
-    return app
+    app.run()
 
-
-   
+if __name__ == "__main__":
+    create_app()
