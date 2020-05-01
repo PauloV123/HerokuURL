@@ -82,6 +82,7 @@ class Reator(threading.Thread):
 
                 reator['volume'] += reator['solucao']['oleo']+reator['solucao']['NAOH']+reator['solucao']['ETOH']
 
+
 def create_app():
     global app
     print('starting logic thread...')
@@ -89,7 +90,5 @@ def create_app():
     sec.start()
     print('logic thread started!')
     print('starting flask server')
-    app.run()
+    return app
 
-if __name__ == "__main__":
-    create_app()
