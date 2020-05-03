@@ -16,7 +16,7 @@ reator = {
 }
 
 @app.route('/reator', methods=['POST'])
-def post(self):
+def post():
         json_data = request.get_json(force=True)
         volume = json_data.get('volume', None)
         
@@ -42,7 +42,7 @@ def post(self):
             reator['solucao']['ETOH'] = 0
             reator['solucao']['oleo'] = 0
         
-        # requests.post(url=REATOR_URL, json=json, headers={"Content_Type": "application/json"})
+        
         return json
 
 
